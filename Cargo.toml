@@ -1,6 +1,6 @@
 [package]
-name = "fleet"
-version = "0.1.0"
+name = "fleet-cli"
+version = "0.1.0-alpha.0"
 description = "Program management for Solana and Anchor."
 edition = "2018"
 
@@ -20,3 +20,7 @@ serde_with = { version = "1.9.3" }
 colored = "2"
 rand = "0.7.3"
 tempfile = "3.2.0"
+
+[[bin]]
+name = "fleet"
+path = "src/main.rs"

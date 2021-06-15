@@ -1109,8 +1109,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "fleet"
-version = "0.1.0"
+name = "fleet-cli"
+version = "0.1.0-alpha.0"
 dependencies = [
  "anchor-client",
  "anyhow",
