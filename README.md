@@ -11,7 +11,7 @@ Version control and key management for [Solana](https://solana.com/) programs.
 - Separation of deployer and authority keys
 - Per-cluster configuration
 - Reusable and custom program addresses
-- Integration with [Anchor](https://project-serum.github.io/anchor/) IDLs
+- _(optional)_ Integration with [Anchor](https://project-serum.github.io/anchor/) IDLs
 
 ## License
 
