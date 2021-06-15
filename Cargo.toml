@@ -1,8 +1,10 @@
 [package]
-name = "fleet-cli"
+name = "captain"
 version = "0.1.0-alpha.0"
 description = "Program management for Solana and Anchor."
+homepage = "captain.so"
 authors = ["Ian Macalinao <ian@saber.so>"]
+license = "Apache-2.0"
 edition = "2018"
 
 [dependencies]
@@ -23,5 +25,5 @@ rand = "0.7.3"
 tempfile = "3.2.0"
 
 [[bin]]
-name = "fleet"
+name = "captain"
 path = "src/main.rs"

@@ -1,9 +1,9 @@
-# fleet 🚢
+# captain 🚢
 
-[![Crates.io](https://img.shields.io/crates/v/fleet-cli?style=flat-square)](https://crates.io/crates/fleet-cli)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/saber-hq/fleet/blob/master/LICENSE-APACHE)
-[![Build Status](https://img.shields.io/github/workflow/status/saber-hq/fleet/CI/master?style=flat-square)](https://github.com/saber-hq/fleet/actions/workflows/ci.yml?query=branch%3Amaster)
-[![Contributors](https://img.shields.io/github/contributors/saber-hq/fleet?style=flat-square)](https://github.com/saber-hq/fleet/graphs/contributors)
+[![Crates.io](https://img.shields.io/crates/v/captain-cli?style=flat-square)](https://crates.io/crates/captain-cli)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/saber-hq/captain/blob/master/LICENSE-APACHE)
+[![Build Status](https://img.shields.io/github/workflow/status/saber-hq/captain/CI/master?style=flat-square)](https://github.com/saber-hq/captain/actions/workflows/ci.yml?query=branch%3Amaster)
+[![Contributors](https://img.shields.io/github/contributors/saber-hq/captain?style=flat-square)](https://github.com/saber-hq/captain/graphs/contributors)
 
 Version control and key management for [Solana](https://solana.com/) programs.
 
@@ -18,29 +18,29 @@ Version control and key management for [Solana](https://solana.com/) programs.
 Install via Cargo like so:
 
 ```
-cargo install --git https://github.com/saber-hq/fleet --force
+cargo install --git https://github.com/saber-hq/captain --force
 ```
 
 Then, in your directory containing your root `Cargo.toml`, run the following command:
 
 ```
-fleet init
+captain init
 ```
 
 ## Usage
 
-A Fleet workflow works like so:
+A Captain workflow works like so:
 
-1. Build your latest programs via `fleet build`
-2. Deploy any new programs with `fleet deploy`
-3. Upgrade any new programs with `fleet upgrade`
+1. Build your latest programs via `captain build`
+2. Deploy any new programs with `captain deploy`
+3. Upgrade any new programs with `captain upgrade`
 
 ### Build
 
 First, build your programs using the command:
 
 ```bash
-fleet build
+captain build
 ```
 
 This runs `anchor build -v` if you have Anchor installed, and `cargo build-bpf` if you don't have Anchor installed.

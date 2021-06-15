@@ -67,8 +67,8 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             paths: Paths {
-                artifacts: FleetPath(PathBuf::from("./.fleet/artifacts/")),
-                program_keypairs: FleetPath(PathBuf::from("./.fleet/program_keypairs")),
+                artifacts: CaptainPath(PathBuf::from("./.captain/artifacts/")),
+                program_keypairs: CaptainPath(PathBuf::from("./.captain/program_keypairs")),
             },
             networks: BTreeMap::default(),
         }
@@ -78,14 +78,14 @@ impl Default for Config {
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Paths {
     /// Where binaries are stored
-    pub artifacts: FleetPath,
+    pub artifacts: CaptainPath,
     /// Where program address keypairs are stored
-    pub program_keypairs: FleetPath,
+    pub program_keypairs: CaptainPath,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct NetworkConfig {
-    pub deployer: FleetPath,
+    pub deployer: CaptainPath,
     /// The upgrade authority address.
     pub upgrade_authority: String,
     /// URL
@@ -138,7 +138,7 @@ impl Config {
         }
     }
 
-    // Searches all parent directories for a Fleet.toml and Cargo.toml file.
+    // Searches all parent directories for a Captain.toml and Cargo.toml file.
     pub fn discover() -> Result<(Self, Manifest, PathBuf)> {
         // Set to true if we ever see a Cargo.toml file when traversing the
         // parent directories.
@@ -152,7 +152,7 @@ impl Config {
             for f in files {
                 let p = f?.path();
                 if let Some(filename) = p.file_name() {
-                    if filename.to_str() == Some("Fleet.toml") {
+                    if filename.to_str() == Some("Captain.toml") {
                         let mut cfg_file = File::open(&p)?;
                         let mut cfg_contents = String::new();
                         cfg_file.read_to_string(&mut cfg_contents)?;
@@ -170,24 +170,24 @@ impl Config {
             cwd_opt = cwd.parent();
         }
 
-        Err(anyhow!("Cargo.toml and Fleet.toml not found"))
+        Err(anyhow!("Cargo.toml and Captain.toml not found"))
     }
 }
 
 #[derive(Debug, Default, Serialize, DeserializeFromStr, Clone)]
-pub struct FleetPath(pub PathBuf);
+pub struct CaptainPath(pub PathBuf);
 
-impl FleetPath {
+impl CaptainPath {
     pub fn as_path_buf(&self) -> PathBuf {
         self.0.clone()
     }
 }
 
-impl FromStr for FleetPath {
+impl FromStr for CaptainPath {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(FleetPath(PathBuf::from_str(
+        Ok(CaptainPath(PathBuf::from_str(
             shellexpand::tilde(s).to_string().as_str(),
         )?))
     }

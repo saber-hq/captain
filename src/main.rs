@@ -1,4 +1,4 @@
-//! Fleet entrypoint
+//! Captain entrypoint
 
 #[macro_use]
 mod macros;
@@ -7,8 +7,8 @@ mod command;
 mod config;
 mod workspace;
 
+use crate::config::CaptainPath;
 use crate::config::Config;
-use crate::config::FleetPath;
 use crate::config::Network;
 use crate::config::NetworkConfig;
 use anyhow::{anyhow, format_err, Result};
@@ -27,7 +27,7 @@ use tempfile::NamedTempFile;
 
 #[derive(Debug, Clap)]
 pub enum SubCommand {
-    #[clap(about = "Initializes a new Fleet workspace.")]
+    #[clap(about = "Initializes a new Captain workspace.")]
     Init,
     #[clap(about = "Builds all programs. (Uses Anchor)")]
     Build,
@@ -81,10 +81,10 @@ fn main_with_result() -> Result<()> {
 
     match opts.command {
         SubCommand::Init => {
-            if std::env::current_dir()?.join("Fleet.toml").exists() {
+            if std::env::current_dir()?.join("Captain.toml").exists() {
                 println!(
                     "{}",
-                    "Fleet.toml has already been initialized in this directory.".red()
+                    "Captain.toml has already been initialized in this directory.".red()
                 );
                 std::process::exit(1);
             }
@@ -97,7 +97,7 @@ fn main_with_result() -> Result<()> {
             }
             let mut cfg = Config::default();
 
-            let deployers_root = PathBuf::from("./.fleet/deployers/");
+            let deployers_root = PathBuf::from("./.captain/deployers/");
             std::fs::create_dir_all(&deployers_root)?;
 
             for network in &[
@@ -116,7 +116,7 @@ fn main_with_result() -> Result<()> {
                 networks.insert(
                     network.clone(),
                     NetworkConfig {
-                        deployer: FleetPath(deployer_path),
+                        deployer: CaptainPath(deployer_path),
                         url: network.url().to_string().into(),
                         ws_url: network.ws_url().to_string().into(),
                         upgrade_authority: "~/.config/solana/id.json".to_string(),
@@ -125,7 +125,7 @@ fn main_with_result() -> Result<()> {
             }
 
             let toml = toml::to_string(&cfg)?;
-            let mut file = File::create("Fleet.toml")?;
+            let mut file = File::create("Captain.toml")?;
             file.write_all(toml.as_bytes())?;
         }
         SubCommand::Build => {
@@ -155,7 +155,7 @@ fn main_with_result() -> Result<()> {
             println!("Address: {}", workspace.program_key);
 
             if workspace.show_program()? {
-                println!("Program already deployed. Use `fleet upgrade` if you want to upgrade the program.");
+                println!("Program already deployed. Use `captain upgrade` if you want to upgrade the program.");
                 std::process::exit(0);
             }
 
@@ -230,7 +230,7 @@ fn main_with_result() -> Result<()> {
             }
 
             if !workspace.show_program()? {
-                println!("Program does not exist. Use `fleet deploy` if you want to deploy the program for the first time.");
+                println!("Program does not exist. Use `captain deploy` if you want to deploy the program for the first time.");
                 std::process::exit(1);
             }
 
