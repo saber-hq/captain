@@ -162,6 +162,6 @@ impl Workspace {
         self.network_config
             .url
             .clone()
-            .unwrap_or(self.network.url().to_string())
+            .unwrap_or_else(|| self.network.url().to_string())
     }
 }
