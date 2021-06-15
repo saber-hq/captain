@@ -114,9 +114,21 @@ fn get_deploy_version(program: &str, root: &Path, version: Option<Version>) -> R
     match version {
         Some(v) => Ok(v),
         None => {
-            let program_manifest =
-                Manifest::from_path(root.join("programs").join(program).join("Cargo.toml"))
-                    .map_err(|_| anyhow!("Program Cargo.toml not found"))?;
+            let mf_path = &root.join("programs").join(program).join("Cargo.toml");
+            let program_manifest_path = if mf_path.exists() {
+                mf_path.clone()
+            } else {
+                root.join("programs")
+                    .join(&program.replace("_", "-"))
+                    .join("Cargo.toml")
+            };
+            let program_manifest = Manifest::from_path(&program_manifest_path).map_err(|_| {
+                format_err!(
+                    "Program Cargo.toml not found at paths {} or {}",
+                    &mf_path.display(),
+                    &program_manifest_path.display()
+                )
+            })?;
             Ok(Version::parse(
                 program_manifest
                     .package
