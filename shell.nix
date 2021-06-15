@@ -10,6 +10,7 @@ pkgs.mkShell {
     ])) ++ [
       cargo-deps
       cargo-watch
+      cargo-udeps
 
       # sdk
       (yarn.override { nodejs = nodejs-14_x; })
@@ -19,7 +20,6 @@ pkgs.mkShell {
       pkgconfig
       openssl
       jq
-      gnused
 
       libiconv
     ];

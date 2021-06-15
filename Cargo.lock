@@ -266,7 +266,6 @@ dependencies = [
  "cargo_toml",
  "clap",
  "colored",
- "rand 0.8.3",
  "semver 1.0.3",
  "serde",
  "serde_with",

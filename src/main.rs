@@ -14,7 +14,6 @@ use crate::config::NetworkConfig;
 use anyhow::{anyhow, format_err, Result};
 use clap::{crate_authors, crate_description, crate_version, AppSettings, Clap};
 use colored::*;
-use rand::rngs::OsRng;
 use semver::Version;
 use solana_sdk::signature::Signer;
 use std::env;
@@ -106,7 +105,7 @@ fn main_with_result() -> Result<()> {
                 Network::Testnet,
                 Network::Localnet,
             ] {
-                let deployer_kp = solana_sdk::signer::keypair::Keypair::generate(&mut OsRng);
+                let deployer_kp = solana_sdk::signer::keypair::Keypair::new();
                 let deployer_path =
                     deployers_root.join(format!("{}/deployer.json", network.to_string()));
                 solana_sdk::signer::keypair::write_keypair_file(&deployer_kp, &deployer_path)
@@ -236,7 +235,7 @@ fn main_with_result() -> Result<()> {
 
             output_header("Writing buffer");
 
-            let buffer_kp = solana_sdk::signer::keypair::Keypair::generate(&mut OsRng);
+            let buffer_kp = solana_sdk::signer::keypair::Keypair::new();
             let buffer_key = buffer_kp.pubkey();
             println!("Buffer Pubkey: {}", buffer_key);
 

@@ -10,19 +10,18 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.32"
+cargo_toml = "0.9.2"
 clap = "3.0.0-beta.2"
+colored = "2"
 semver = "1.0.3"
-strum = "0.21.0"
-strum_macros = "0.21"
 serde = { version = "1.0", features = ["derive"] }
-toml = "0.5.8"
+serde_with = { version = "1.9.3" }
 shellexpand = "2.1.0"
 solana-sdk = "1.7.1"
-cargo_toml = "0.9.2"
-serde_with = { version = "1.9.3" }
-colored = "2"
-rand = "0.8.3"
+strum = "0.21.0"
+strum_macros = "0.21"
 tempfile = "3.2.0"
+toml = "0.5.8"
 
 [[bin]]
 name = "captain"
