@@ -2,7 +2,8 @@
 name = "captain"
 version = "0.1.0-alpha.0"
 description = "Program management for Solana and Anchor."
-homepage = "captain.so"
+homepage = "https://captain.so"
+repository = "https://github.com/saber-hq/captain"
 authors = ["Ian Macalinao <ian@saber.so>"]
 license = "Apache-2.0"
 edition = "2018"
