@@ -110,33 +110,35 @@ fn check_and_get_program_paths(
     })
 }
 
+pub fn get_program_version(program: &str, root: &Path) -> Result<Version> {
+    let mf_path = &root.join("programs").join(program).join("Cargo.toml");
+    let program_manifest_path = if mf_path.exists() {
+        mf_path.clone()
+    } else {
+        root.join("programs")
+            .join(&program.replace("_", "-"))
+            .join("Cargo.toml")
+    };
+    let program_manifest = Manifest::from_path(&program_manifest_path).map_err(|_| {
+        format_err!(
+            "Program Cargo.toml not found at paths {} or {}",
+            &mf_path.display(),
+            &program_manifest_path.display()
+        )
+    })?;
+    Ok(Version::parse(
+        program_manifest
+            .package
+            .ok_or_else(|| anyhow!("invalid package"))?
+            .version
+            .as_str(),
+    )?)
+}
+
 fn get_deploy_version(program: &str, root: &Path, version: Option<Version>) -> Result<Version> {
     match version {
         Some(v) => Ok(v),
-        None => {
-            let mf_path = &root.join("programs").join(program).join("Cargo.toml");
-            let program_manifest_path = if mf_path.exists() {
-                mf_path.clone()
-            } else {
-                root.join("programs")
-                    .join(&program.replace("_", "-"))
-                    .join("Cargo.toml")
-            };
-            let program_manifest = Manifest::from_path(&program_manifest_path).map_err(|_| {
-                format_err!(
-                    "Program Cargo.toml not found at paths {} or {}",
-                    &mf_path.display(),
-                    &program_manifest_path.display()
-                )
-            })?;
-            Ok(Version::parse(
-                program_manifest
-                    .package
-                    .ok_or_else(|| anyhow!("invalid package"))?
-                    .version
-                    .as_str(),
-            )?)
-        }
+        None => get_program_version(program, root),
     }
 }
 
