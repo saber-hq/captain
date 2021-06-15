@@ -45,6 +45,39 @@ captain build
 
 This runs `anchor build -v` if you have Anchor installed, and `cargo build-bpf` if you don't have Anchor installed.
 
+### Deploy
+
+Once your new program is ready to be deployed to the blockchain, run:
+
+```
+captain deploy --program <program> --network <network>
+```
+
+where:
+
+- `<network>` is one of `mainnet`, `devnet`, `testnet`, `localnet`, or `debug`
+- `<program>` is the name of your program in the `target/deploy/` directory. For example, if your program is at `target/deploy/my_flash_loan_program.so`, your `<program>` is `my_flash_loan_program`.
+
+This does several things for you:
+
+- Deploys the program
+- Sets the deployer of the program to the `upgrade_authority` of `<network>` in your `Captain.toml` file
+- If Anchor is installed, uploads the IDLs and sets the authority to the `upgrade_authority`
+
+### Upgrading
+
+If you need to make changes to your program, you can run:
+
+```
+captain upgrade --program <program> --network <network>
+```
+
+This performs the following actions:
+
+- Writes a new program buffer
+- Replaces the existing program buffer with this new buffer using the upgrade authority
+- (WIP) If Anchor is installed, uploads the new IDL
+
 ## License
 
 Apache-2.0

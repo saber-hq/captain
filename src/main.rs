@@ -1,5 +1,4 @@
 //! Captain entrypoint
-
 #[macro_use]
 mod macros;
 
