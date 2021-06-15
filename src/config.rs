@@ -55,7 +55,7 @@ pub struct Paths {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct NetworkConfig {
     pub deployer: FleetPath,
-    /// The upgrade authority keypair. Can be a ledger via usb://ledger?key=n
+    /// The upgrade authority address.
     pub upgrade_authority: String,
 }
 

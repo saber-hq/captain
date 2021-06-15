@@ -1117,6 +1117,7 @@ dependencies = [
  "cargo_toml",
  "clap 3.0.0-beta.2",
  "colored",
+ "rand 0.7.3",
  "semver 1.0.3",
  "serde",
  "serde_with",
@@ -1124,6 +1125,7 @@ dependencies = [
  "solana-sdk",
  "strum",
  "strum_macros",
+ "tempfile",
  "toml",
 ]
 
