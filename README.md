@@ -56,7 +56,7 @@ captain deploy --program <program> --network <network>
 where:
 
 - `<network>` is one of `mainnet`, `devnet`, `testnet`, `localnet`, or `debug`
-- `<program>` is the name of your program in the `target/deploy/` directory. For example, if your program is at `target/deploy/my_flash_loan_program.so`, your `<program>` is `my_flash_loan_program`.
+- `<program>` is the name of your program in the `target/deploy/` directory. You can view a list of all available programs using the command `captain programs`.
 
 This does several things for you:
 
