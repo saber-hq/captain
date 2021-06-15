@@ -31,7 +31,7 @@ pub struct ProgramPaths {
     pub id: PathBuf,
 }
 
-pub fn init(program: &str, version: Option<Version>, network: Network) -> Result<Workspace> {
+pub fn load(program: &str, version: Option<Version>, network: Network) -> Result<Workspace> {
     let (config, _, root) = Config::discover()?;
 
     let deploy_version = get_deploy_version(program, &root, version)?;
@@ -156,5 +156,12 @@ impl Workspace {
     /// Returns true if this is also an Anchor workspace.
     pub fn has_anchor(&self) -> bool {
         self.root.join("Anchor.toml").exists()
+    }
+
+    pub fn network_url(&self) -> String {
+        self.network_config
+            .url
+            .clone()
+            .unwrap_or(self.network.url().to_string())
     }
 }

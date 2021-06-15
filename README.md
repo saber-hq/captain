@@ -13,12 +13,18 @@ Version control and key management for [Solana](https://solana.com/) programs.
 - Reusable and custom program addresses
 - _(optional)_ Integration with [Anchor](https://project-serum.github.io/anchor/) IDLs
 
-## Installation
+## Setup
 
 Install via Cargo like so:
 
 ```
 cargo install --git https://github.com/saber-hq/fleet --force
+```
+
+Then, in your directory containing your root `Cargo.toml`, run the following command:
+
+```
+fleet init
 ```
 
 ## Usage

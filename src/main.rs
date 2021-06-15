@@ -5,7 +5,9 @@ mod config;
 mod workspace;
 
 use crate::config::Config;
+use crate::config::FleetPath;
 use crate::config::Network;
+use crate::config::NetworkConfig;
 use anyhow::{anyhow, format_err, Result};
 use clap::{crate_authors, crate_description, crate_version, AppSettings, Clap};
 use colored::*;
@@ -15,6 +17,7 @@ use solana_sdk::signature::Signer;
 use std::env;
 use std::fs::File;
 use std::io::Write;
+use std::path::PathBuf;
 use std::process::Command;
 use strum::VariantNames;
 use tempfile::NamedTempFile;
@@ -75,6 +78,13 @@ fn main_with_result() -> Result<()> {
 
     match opts.command {
         SubCommand::Init => {
+            if std::env::current_dir()?.join("Fleet.toml").exists() {
+                println!(
+                    "{}",
+                    "Fleet.toml has already been initialized in this directory.".red()
+                );
+                std::process::exit(1);
+            }
             if !std::env::current_dir()?.join("Cargo.toml").exists() {
                 println!(
                     "{}",
@@ -82,7 +92,35 @@ fn main_with_result() -> Result<()> {
                 );
                 std::process::exit(1);
             }
-            let cfg = Config::default();
+            let mut cfg = Config::default();
+
+            let deployers_root = PathBuf::from("./.fleet/deployers/");
+            std::fs::create_dir_all(&deployers_root)?;
+
+            for network in &[
+                Network::Mainnet,
+                Network::Devnet,
+                Network::Testnet,
+                Network::Localnet,
+            ] {
+                let deployer_kp = solana_sdk::signer::keypair::Keypair::generate(&mut OsRng);
+                let deployer_path =
+                    deployers_root.join(format!("{}/deployer.json", network.to_string()));
+                solana_sdk::signer::keypair::write_keypair_file(&deployer_kp, &deployer_path)
+                    .map_err(|_| format_err!("could not generate temp buffer keypair"))?;
+
+                let networks = &mut cfg.networks;
+                networks.insert(
+                    network.clone(),
+                    NetworkConfig {
+                        deployer: FleetPath(deployer_path),
+                        url: network.url().to_string().into(),
+                        ws_url: network.ws_url().to_string().into(),
+                        upgrade_authority: "~/.config/solana/id.json".to_string(),
+                    },
+                );
+            }
+
             let toml = toml::to_string(&cfg)?;
             let mut file = File::create("Fleet.toml")?;
             file.write_all(toml.as_bytes())?;
@@ -105,7 +143,7 @@ fn main_with_result() -> Result<()> {
             program,
             ref network,
         } => {
-            let workspace = &workspace::init(program.as_str(), version, network.clone())?;
+            let workspace = &workspace::load(program.as_str(), version, network.clone())?;
             println!(
                 "Deploying program {} with version {}",
                 program, workspace.deploy_version
@@ -125,6 +163,8 @@ fn main_with_result() -> Result<()> {
                     .arg("program")
                     .arg("deploy")
                     .arg(&workspace.program_paths.bin)
+                    .arg("--url")
+                    .arg(&workspace.network_url())
                     .arg("--keypair")
                     .arg(&workspace.deployer_path)
                     .arg("--program-id")
@@ -138,6 +178,8 @@ fn main_with_result() -> Result<()> {
                     .arg("program")
                     .arg("set-upgrade-authority")
                     .arg(&workspace.program_paths.id)
+                    .arg("--url")
+                    .arg(&workspace.network_url())
                     .arg("--keypair")
                     .arg(&workspace.deployer_path)
                     .arg("--new-upgrade-authority")
@@ -192,7 +234,7 @@ fn main_with_result() -> Result<()> {
                     format_err!("Must set UPGRADE_AUTHORITY_KEYPAIR environment variable.")
                 })?;
 
-            let workspace = workspace::init(program.as_str(), version, network.clone())?;
+            let workspace = workspace::load(program.as_str(), version, network.clone())?;
             println!(
                 "Upgrading program {} with version {}",
                 program, workspace.deploy_version
@@ -222,6 +264,8 @@ fn main_with_result() -> Result<()> {
                     .arg("program")
                     .arg("write-buffer")
                     .arg(&workspace.program_paths.bin)
+                    .arg("--url")
+                    .arg(&workspace.network_url())
                     .arg("--keypair")
                     .arg(&workspace.deployer_path)
                     .arg("--output")
@@ -237,6 +281,8 @@ fn main_with_result() -> Result<()> {
                     .arg("program")
                     .arg("set-buffer-authority")
                     .arg(buffer_key.to_string())
+                    .arg("--url")
+                    .arg(&workspace.network_url())
                     .arg("--keypair")
                     .arg(&workspace.deployer_path)
                     .arg("--new-buffer-authority")
@@ -249,6 +295,8 @@ fn main_with_result() -> Result<()> {
                 std::process::Command::new("solana")
                     .arg("program")
                     .arg("deploy")
+                    .arg("--url")
+                    .arg(&workspace.network_url())
                     .arg("--buffer")
                     .arg(buffer_key.to_string())
                     .arg("--keypair")

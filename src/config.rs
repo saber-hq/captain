@@ -35,11 +35,44 @@ pub enum Network {
     Debug,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+impl Network {
+    pub fn url(&self) -> &str {
+        match self {
+            Network::Devnet => "https://api.devnet.solana.com",
+            Network::Testnet => "https://api.testnet.solana.com",
+            Network::Mainnet => "https://api.mainnet-beta.solana.com",
+            Network::Localnet => "http://127.0.0.1:8899",
+            Network::Debug => "http://34.90.18.145:8899",
+        }
+    }
+    pub fn ws_url(&self) -> &str {
+        match self {
+            Network::Devnet => "wss://api.devnet.solana.com",
+            Network::Testnet => "wss://api.testnet.solana.com",
+            Network::Mainnet => "wss://api.mainnet-beta.solana.com",
+            Network::Localnet => "ws://127.0.0.1:9000",
+            Network::Debug => "ws://34.90.18.145:9000",
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
     pub paths: Paths,
     /// Network configuration
     pub networks: BTreeMap<Network, NetworkConfig>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            paths: Paths {
+                artifacts: FleetPath(PathBuf::from("./.fleet/artifacts/")),
+                program_keypairs: FleetPath(PathBuf::from("./.fleet/program_keypairs")),
+            },
+            networks: BTreeMap::default(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -55,6 +88,10 @@ pub struct NetworkConfig {
     pub deployer: FleetPath,
     /// The upgrade authority address.
     pub upgrade_authority: String,
+    /// URL
+    pub url: Option<String>,
+    /// Websocket URL
+    pub ws_url: Option<String>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -138,7 +175,7 @@ impl Config {
 }
 
 #[derive(Debug, Default, Serialize, DeserializeFromStr, Clone)]
-pub struct FleetPath(PathBuf);
+pub struct FleetPath(pub PathBuf);
 
 impl FleetPath {
     pub fn as_path_buf(&self) -> PathBuf {
