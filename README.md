@@ -78,6 +78,10 @@ This performs the following actions:
 - Replaces the existing program buffer with this new buffer using the upgrade authority
 - (WIP) If Anchor is installed, uploads the new IDL
 
+## Support
+
+For support, join the Saber Discord at [chat.saber.so](https://chat.saber.so)!
+
 ## License
 
 Apache-2.0
