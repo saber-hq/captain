@@ -153,16 +153,25 @@ fn main_with_result() -> Result<()> {
                     .to_str()
                     .ok_or_else(|| format_err!("no str"))?;
 
-                let program_version = workspace::get_program_version(program, &root)?;
+                let program_version = workspace::get_program_version(program, &root).ok();
 
-                let program_key = solana_sdk::signer::keypair::read_keypair_file(
-                    &config.program_kp_path(&program_version, program),
-                )
-                .ok()
-                .map(|k| k.pubkey());
+                let program_key = program_version
+                    .clone()
+                    .and_then(|version| {
+                        solana_sdk::signer::keypair::read_keypair_file(
+                            &config.program_kp_path(&version, program),
+                        )
+                        .ok()
+                    })
+                    .map(|k| k.pubkey());
 
                 println!("Program: {}", program);
-                println!("    Version: {}", program_version);
+                println!(
+                    "    Version: {}",
+                    program_version
+                        .map(|v| v.to_string())
+                        .unwrap_or(format!("{}", "Cargo.toml not found".yellow()))
+                );
                 println!(
                     "    Address: {}",
                     program_key
