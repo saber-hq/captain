@@ -1,4 +1,4 @@
-# captain 🚢
+# captain 🧑‍✈️
 
 [![Crates.io](https://img.shields.io/crates/v/captain-cli?style=flat-square)](https://crates.io/crates/captain-cli)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/saber-hq/captain/blob/master/LICENSE-APACHE)
