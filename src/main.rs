@@ -29,6 +29,8 @@ pub enum SubCommand {
     Init,
     #[clap(about = "Builds all programs. (Uses Anchor)")]
     Build,
+    #[clap(about = "Lists all available programs.")]
+    Programs,
     #[clap(about = "Deploys a program.")]
     Deploy {
         #[clap(short, long)]
@@ -73,9 +75,6 @@ pub struct Opts {
 
 fn main_with_result() -> Result<()> {
     let opts: Opts = Opts::parse();
-
-    // Gets a value for config if supplied by user, or defaults to "default.conf"
-    println!("Value for config: {:?}", opts.command);
 
     match opts.command {
         SubCommand::Init => {
@@ -137,6 +136,23 @@ fn main_with_result() -> Result<()> {
                     "Anchor.toml not found in workspace root. Running `cargo build-bpf`.".yellow()
                 );
                 command::exec(Command::new("cargo").arg("build-bpf"))?;
+            }
+        }
+        SubCommand::Programs => {
+            let paths = std::fs::read_dir("./target/deploy/").unwrap();
+            for path in paths {
+                let the_path = path?.path();
+                if the_path.extension().and_then(|ex| ex.to_str()) != Some("so") {
+                    continue;
+                }
+                println!(
+                    "Program: {}",
+                    the_path
+                        .file_stem()
+                        .ok_or_else(|| format_err!("no file stem"))?
+                        .to_str()
+                        .ok_or_else(|| format_err!("no str"))?
+                )
             }
         }
         SubCommand::Deploy {
