@@ -139,20 +139,46 @@ fn main_with_result() -> Result<()> {
             }
         }
         SubCommand::Programs => {
-            let paths = std::fs::read_dir("./target/deploy/").unwrap();
+            let (config, _, root) = Config::discover()?;
+            let paths = std::fs::read_dir(root.join("./target/deploy/")).unwrap();
             for path in paths {
                 let the_path = path?.path();
                 if the_path.extension().and_then(|ex| ex.to_str()) != Some("so") {
                     continue;
                 }
+
+                let program = the_path
+                    .file_stem()
+                    .ok_or_else(|| format_err!("no file stem"))?
+                    .to_str()
+                    .ok_or_else(|| format_err!("no str"))?;
+
+                let program_version = workspace::get_program_version(program, &root).ok();
+
+                let program_key = program_version
+                    .clone()
+                    .and_then(|version| {
+                        solana_sdk::signer::keypair::read_keypair_file(
+                            &config.program_kp_path(&version, program),
+                        )
+                        .ok()
+                    })
+                    .map(|k| k.pubkey());
+
+                println!("Program: {}", program);
                 println!(
-                    "Program: {}",
-                    the_path
-                        .file_stem()
-                        .ok_or_else(|| format_err!("no file stem"))?
-                        .to_str()
-                        .ok_or_else(|| format_err!("no str"))?
-                )
+                    "    Version: {}",
+                    program_version
+                        .map(|v| v.to_string())
+                        .unwrap_or(format!("{}", "Cargo.toml not found".yellow()))
+                );
+                println!(
+                    "    Address: {}",
+                    program_key
+                        .map(|k| k.to_string())
+                        .unwrap_or(format!("{}", "not deployed".yellow()))
+                );
+                println!();
             }
         }
         SubCommand::Deploy {
