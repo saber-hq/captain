@@ -2,6 +2,7 @@
 name = "fleet-cli"
 version = "0.1.0-alpha.0"
 description = "Program management for Solana and Anchor."
+authors = ["Ian Macalinao <ian@saber.so>"]
 edition = "2018"
 
 [dependencies]
