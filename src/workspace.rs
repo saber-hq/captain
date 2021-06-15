@@ -151,4 +151,9 @@ impl Workspace {
         )?;
         Ok(())
     }
+
+    /// Returns true if this is also an Anchor workspace.
+    pub fn has_anchor(&self) -> bool {
+        self.root.join("Anchor.toml").exists()
+    }
 }

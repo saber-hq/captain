@@ -121,39 +121,38 @@ fn main_with_result() -> Result<()> {
 
             workspace.show_program()?;
 
-            output_header("Initializing IDL");
+            if workspace.has_anchor() {
+                output_header("Initializing IDL");
+                command::exec(
+                    std::process::Command::new("anchor")
+                        .arg("idl")
+                        .arg("init")
+                        .arg(&workspace.program_key.to_string())
+                        .arg("--filepath")
+                        .arg(&workspace.program_paths.idl)
+                        .arg("--provider.cluster")
+                        .arg(workspace.network.to_string())
+                        .arg("--provider.wallet")
+                        .arg(&workspace.deployer_path),
+                )?;
 
-            command::exec(
-                std::process::Command::new("anchor")
-                    .arg("idl")
-                    .arg("init")
-                    .arg(&workspace.program_key.to_string())
-                    .arg("--filepath")
-                    .arg(&workspace.program_paths.idl)
-                    .arg("--provider.cluster")
-                    .arg(workspace.network.to_string())
-                    .arg("--provider.wallet")
-                    .arg(&workspace.deployer_path),
-            )?;
-
-            output_header("Setting IDL authority");
-
-            command::exec(
-                std::process::Command::new("anchor")
-                    .arg("idl")
-                    .arg("set-authority")
-                    .arg("--program-id")
-                    .arg(workspace.program_key.to_string())
-                    .arg("--new-authority")
-                    .arg(&workspace.network_config.upgrade_authority)
-                    .arg("--provider.cluster")
-                    .arg(workspace.network.as_ref())
-                    .arg("--provider.wallet")
-                    .arg(&workspace.deployer_path),
-            )?;
+                output_header("Setting IDL authority");
+                command::exec(
+                    std::process::Command::new("anchor")
+                        .arg("idl")
+                        .arg("set-authority")
+                        .arg("--program-id")
+                        .arg(workspace.program_key.to_string())
+                        .arg("--new-authority")
+                        .arg(&workspace.network_config.upgrade_authority)
+                        .arg("--provider.cluster")
+                        .arg(workspace.network.as_ref())
+                        .arg("--provider.wallet")
+                        .arg(&workspace.deployer_path),
+                )?;
+            }
 
             output_header("Copying artifacts");
-
             workspace.copy_artifacts()?;
 
             println!("Deployment success!");
@@ -235,29 +234,29 @@ fn main_with_result() -> Result<()> {
 
             workspace.show_program()?;
 
-            output_header("Uploading new IDL");
+            if workspace.has_anchor() {
+                output_header("Uploading new IDL");
+                command::exec(
+                    std::process::Command::new("anchor")
+                        .arg("idl")
+                        .arg("write-buffer")
+                        .arg(workspace.program_key.to_string())
+                        .arg("--filepath")
+                        .arg(&workspace.program_paths.idl)
+                        .arg("--provider.cluster")
+                        .arg(workspace.network.to_string())
+                        .arg("--provider.wallet")
+                        .arg(&workspace.deployer_path),
+                )?;
 
-            command::exec(
-                std::process::Command::new("anchor")
-                    .arg("idl")
-                    .arg("write-buffer")
-                    .arg(workspace.program_key.to_string())
-                    .arg("--filepath")
-                    .arg(&workspace.program_paths.idl)
-                    .arg("--provider.cluster")
-                    .arg(workspace.network.to_string())
-                    .arg("--provider.wallet")
-                    .arg(&workspace.deployer_path),
-            )?;
-
-            println!(
-                "WARNING: please manually run `anchor idl set-buffer {} --buffer <BUFFER>`",
-                workspace.program_key.to_string()
-            );
-            println!("TODO: need to be able to hook into anchor for this");
+                println!(
+                    "WARNING: please manually run `anchor idl set-buffer {} --buffer <BUFFER>`",
+                    workspace.program_key.to_string()
+                );
+                println!("TODO: need to be able to hook into anchor for this");
+            }
 
             output_header("Copying artifacts");
-
             workspace.copy_artifacts()?;
 
             println!("Deployment success!");
