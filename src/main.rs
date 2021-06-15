@@ -11,7 +11,6 @@ use colored::*;
 use semver::Version;
 use solana_sdk::signature::Signer;
 use std::fs;
-use std::path::PathBuf;
 use std::process::Stdio;
 use strum::VariantNames;
 
@@ -146,15 +145,12 @@ fn main_with_result() -> Result<()> {
             output_header("Deploying program");
 
             let exit = std::process::Command::new("solana")
-                .args(&[
-                    "program",
-                    "deploy",
-                    path_to_str(&program_bin_path, "bin path not valid")?.as_str(),
-                    "--keypair",
-                    path_to_str(&deployer_path, "deployer kp path not valid")?.as_str(),
-                    "--program-id",
-                    path_to_str(&program_id_path, "program id path not valid")?.as_str(),
-                ])
+                .args(&["program", "deploy"])
+                .arg(&program_bin_path)
+                .arg("--keypair")
+                .arg(&deployer_path)
+                .arg("--program-id")
+                .arg(&program_id_path)
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
                 .output()
@@ -166,15 +162,22 @@ fn main_with_result() -> Result<()> {
             output_header("Setting upgrade authority");
 
             let exit = std::process::Command::new("solana")
-                .args(&[
-                    "program",
-                    "set-upgrade-authority",
-                    path_to_str(&program_id_path, "program id path not valid")?.as_str(),
-                    "--keypair",
-                    path_to_str(&deployer_path, "deployer kp path not valid")?.as_str(),
-                    "--new-upgrade-authority",
-                    network_cfg.upgrade_authority.as_str(),
-                ])
+                .args(&["program", "set-upgrade-authority"])
+                .arg(&program_id_path)
+                .arg("--keypair")
+                .arg(&deployer_path)
+                .arg("--new-upgrade-authority")
+                .arg(&network_cfg.upgrade_authority)
+                .stdout(Stdio::inherit())
+                .stderr(Stdio::inherit())
+                .output()
+                .map_err(|e| anyhow::format_err!("Error deploying: {}", e.to_string()))?;
+            if !exit.status.success() {
+                std::process::exit(exit.status.code().unwrap_or(1));
+            }
+
+            let exit = std::process::Command::new("solana")
+                .args(&["program", "show", program_key.to_string().as_ref()])
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
                 .output()
@@ -191,12 +194,12 @@ fn main_with_result() -> Result<()> {
                     "init",
                     program_key.to_string().as_str(),
                     "--filepath",
-                    path_to_str(&program_idl_path, "program idl path invalid")?.as_str(),
-                    "--provider.cluster",
-                    network.into(),
-                    "--provider.wallet",
-                    path_to_str(&deployer_path, "deployer")?.as_str(),
                 ])
+                .arg(&program_idl_path)
+                .arg("--provider.cluster")
+                .arg(network.to_string())
+                .arg("--provider.wallet")
+                .arg(&deployer_path)
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
                 .output()
@@ -208,18 +211,14 @@ fn main_with_result() -> Result<()> {
             output_header("Setting IDL authority");
 
             let exit = std::process::Command::new("anchor")
-                .args(&[
-                    "idl",
-                    "set-authority",
-                    "--program-id",
-                    program_key.to_string().as_ref(),
-                    "--new-authority",
-                    network_cfg.upgrade_authority.as_str(),
-                    "--provider.cluster",
-                    network.as_ref(),
-                    "--provider.wallet",
-                    path_to_str(&deployer_path, "deployer")?.as_str(),
-                ])
+                .args(&["idl", "set-authority", "--program-id"])
+                .arg(program_key.to_string())
+                .arg("--new-authority")
+                .arg(&network_cfg.upgrade_authority)
+                .arg("--provider.cluster")
+                .arg(network.as_ref())
+                .arg("--provider.wallet")
+                .arg(deployer_path)
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
                 .output()
@@ -231,10 +230,8 @@ fn main_with_result() -> Result<()> {
             output_header("Copying artifacts");
 
             let exit = std::process::Command::new("cp")
-                .args(&[
-                    path_to_str(&program_bin_path, "program bin")?,
-                    path_to_str(&artifact_paths.program, "program")?,
-                ])
+                .arg(program_bin_path)
+                .arg(artifact_paths.bin)
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
                 .output()
@@ -243,10 +240,8 @@ fn main_with_result() -> Result<()> {
                 std::process::exit(exit.status.code().unwrap_or(1));
             }
             let exit = std::process::Command::new("cp")
-                .args(&[
-                    path_to_str(&program_idl_path, "program idl")?,
-                    path_to_str(&artifact_paths.idl, "program")?,
-                ])
+                .arg(program_idl_path)
+                .arg(artifact_paths.idl)
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
                 .output()
@@ -263,18 +258,13 @@ fn main_with_result() -> Result<()> {
 }
 
 fn output_header(header: &'static str) {
+    println!();
     println!("{}", "===================================".bold());
-    println!("");
+    println!();
     println!("    {}", header.bold());
-    println!("");
+    println!();
     println!("{}", "===================================".bold());
-}
-
-fn path_to_str(program_bin_path: &PathBuf, err_msg: &'static str) -> Result<String> {
-    Ok(fs::canonicalize(program_bin_path)?
-        .to_str()
-        .ok_or(anyhow!(err_msg))?
-        .to_string())
+    println!();
 }
 
 fn main() {

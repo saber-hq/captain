@@ -61,7 +61,7 @@ pub struct NetworkConfig {
 
 pub struct ArtifactPaths {
     pub root: PathBuf,
-    pub program: PathBuf,
+    pub bin: PathBuf,
     pub idl: PathBuf,
 }
 
@@ -91,7 +91,7 @@ impl Config {
             .join(version.to_string());
         ArtifactPaths {
             root: root.clone(),
-            program: root.join("program.so"),
+            bin: root.join("program.so"),
             idl: root.join("idl.json"),
         }
     }
