@@ -13,6 +13,9 @@ use rand::rngs::OsRng;
 use semver::Version;
 use solana_sdk::signature::Signer;
 use std::env;
+use std::fs::File;
+use std::io::Write;
+use std::process::Command;
 use strum::VariantNames;
 use tempfile::NamedTempFile;
 
@@ -72,9 +75,31 @@ fn main_with_result() -> Result<()> {
 
     match opts.command {
         SubCommand::Init => {
-            println!("not implemented");
+            if !std::env::current_dir()?.join("Cargo.toml").exists() {
+                println!(
+                    "{}",
+                    "Cargo.toml does not exist in the current working directory. Ensure that you are at the Cargo workspace root.".red()
+                );
+                std::process::exit(1);
+            }
+            let cfg = Config::default();
+            let toml = toml::to_string(&cfg)?;
+            let mut file = File::create("Fleet.toml")?;
+            file.write_all(toml.as_bytes())?;
         }
-        SubCommand::Build => {}
+        SubCommand::Build => {
+            let (_, _, root) = Config::discover()?;
+            if root.join("Anchor.toml").exists() {
+                println!("{}", "Anchor found! Running `anchor build -v`.".green());
+                command::exec(Command::new("anchor").arg("build").arg("-v"))?;
+            } else {
+                println!(
+                    "{}",
+                    "Anchor.toml not found in workspace root. Running `cargo build-bpf`.".yellow()
+                );
+                command::exec(Command::new("cargo").arg("build-bpf"))?;
+            }
+        }
         SubCommand::Deploy {
             version,
             program,

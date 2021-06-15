@@ -13,6 +13,32 @@ Version control and key management for [Solana](https://solana.com/) programs.
 - Reusable and custom program addresses
 - _(optional)_ Integration with [Anchor](https://project-serum.github.io/anchor/) IDLs
 
+## Installation
+
+Install via Cargo like so:
+
+```
+cargo install --git https://github.com/saber-hq/fleet --force
+```
+
+## Usage
+
+A Fleet workflow works like so:
+
+1. Build your latest programs via `fleet build`
+2. Deploy any new programs with `fleet deploy`
+3. Upgrade any new programs with `fleet upgrade`
+
+### Build
+
+First, build your programs using the command:
+
+```bash
+fleet build
+```
+
+This runs `anchor build -v` if you have Anchor installed, and `cargo build-bpf` if you don't have Anchor installed.
+
 ## License
 
 Apache-2.0
