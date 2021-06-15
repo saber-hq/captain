@@ -35,14 +35,14 @@ pub enum Network {
     Debug,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Config {
     pub paths: Paths,
     /// Network configuration
     pub networks: BTreeMap<Network, NetworkConfig>,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Paths {
     /// Where binaries are stored
     pub artifacts: FleetPath,
@@ -50,17 +50,24 @@ pub struct Paths {
     pub program_keypairs: FleetPath,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct NetworkConfig {
     pub deployer: FleetPath,
     /// The upgrade authority address.
     pub upgrade_authority: String,
 }
 
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct ArtifactPaths {
     pub root: PathBuf,
     pub bin: PathBuf,
     pub idl: PathBuf,
+}
+
+impl ArtifactPaths {
+    pub fn exist(&self) -> bool {
+        self.bin.exists() || self.idl.exists()
+    }
 }
 
 impl Config {
@@ -130,7 +137,7 @@ impl Config {
     }
 }
 
-#[derive(Debug, Default, Serialize, DeserializeFromStr)]
+#[derive(Debug, Default, Serialize, DeserializeFromStr, Clone)]
 pub struct FleetPath(PathBuf);
 
 impl FleetPath {
