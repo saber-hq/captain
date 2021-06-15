@@ -131,7 +131,7 @@ fn get_deploy_version(program: &str, root: &Path, version: Option<Version>) -> R
 impl Workspace {
     pub fn show_program(&self) -> Result<bool> {
         let exit = command::exec_unhandled(
-            std::process::Command::new("solana")
+            solana_cmd!(self)
                 .arg("program")
                 .arg("show")
                 .arg(self.program_key.to_string()),

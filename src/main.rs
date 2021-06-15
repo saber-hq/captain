@@ -1,5 +1,8 @@
 //! Fleet entrypoint
 
+#[macro_use]
+mod macros;
+
 mod command;
 mod config;
 mod workspace;
@@ -159,14 +162,10 @@ fn main_with_result() -> Result<()> {
             output_header("Deploying program");
 
             command::exec(
-                std::process::Command::new("solana")
+                solana_cmd!(workspace)
                     .arg("program")
                     .arg("deploy")
                     .arg(&workspace.program_paths.bin)
-                    .arg("--url")
-                    .arg(&workspace.network_url())
-                    .arg("--keypair")
-                    .arg(&workspace.deployer_path)
                     .arg("--program-id")
                     .arg(&workspace.program_paths.id),
             )?;
@@ -174,14 +173,10 @@ fn main_with_result() -> Result<()> {
             output_header("Setting upgrade authority");
 
             command::exec(
-                std::process::Command::new("solana")
+                solana_cmd!(workspace)
                     .arg("program")
                     .arg("set-upgrade-authority")
                     .arg(&workspace.program_paths.id)
-                    .arg("--url")
-                    .arg(&workspace.network_url())
-                    .arg("--keypair")
-                    .arg(&workspace.deployer_path)
                     .arg("--new-upgrade-authority")
                     .arg(&workspace.network_config.upgrade_authority),
             )?;
@@ -191,31 +186,21 @@ fn main_with_result() -> Result<()> {
             if workspace.has_anchor() {
                 output_header("Initializing IDL");
                 command::exec(
-                    std::process::Command::new("anchor")
-                        .arg("idl")
+                    anchor_cmd!(workspace, "idl")
                         .arg("init")
                         .arg(&workspace.program_key.to_string())
                         .arg("--filepath")
-                        .arg(&workspace.program_paths.idl)
-                        .arg("--provider.cluster")
-                        .arg(workspace.network.to_string())
-                        .arg("--provider.wallet")
-                        .arg(&workspace.deployer_path),
+                        .arg(&workspace.program_paths.idl),
                 )?;
 
                 output_header("Setting IDL authority");
                 command::exec(
-                    std::process::Command::new("anchor")
-                        .arg("idl")
+                    anchor_cmd!(workspace, "idl")
                         .arg("set-authority")
                         .arg("--program-id")
                         .arg(workspace.program_key.to_string())
                         .arg("--new-authority")
-                        .arg(&workspace.network_config.upgrade_authority)
-                        .arg("--provider.cluster")
-                        .arg(workspace.network.as_ref())
-                        .arg("--provider.wallet")
-                        .arg(&workspace.deployer_path),
+                        .arg(&workspace.network_config.upgrade_authority),
                 )?;
             }
 
@@ -260,14 +245,10 @@ fn main_with_result() -> Result<()> {
                 .map_err(|_| format_err!("could not generate temp buffer keypair"))?;
 
             command::exec(
-                std::process::Command::new("solana")
+                solana_cmd!(workspace)
                     .arg("program")
                     .arg("write-buffer")
                     .arg(&workspace.program_paths.bin)
-                    .arg("--url")
-                    .arg(&workspace.network_url())
-                    .arg("--keypair")
-                    .arg(&workspace.deployer_path)
                     .arg("--output")
                     .arg("json")
                     .arg("--buffer")
@@ -277,14 +258,10 @@ fn main_with_result() -> Result<()> {
             output_header("Setting buffer authority");
 
             command::exec(
-                std::process::Command::new("solana")
+                solana_cmd!(workspace)
                     .arg("program")
                     .arg("set-buffer-authority")
                     .arg(buffer_key.to_string())
-                    .arg("--url")
-                    .arg(&workspace.network_url())
-                    .arg("--keypair")
-                    .arg(&workspace.deployer_path)
                     .arg("--new-buffer-authority")
                     .arg(&workspace.network_config.upgrade_authority),
             )?;
@@ -292,15 +269,15 @@ fn main_with_result() -> Result<()> {
             output_header("Switching to new buffer (please connect your wallet)");
 
             command::exec(
-                std::process::Command::new("solana")
-                    .arg("program")
-                    .arg("deploy")
+                Command::new("solana")
                     .arg("--url")
                     .arg(&workspace.network_url())
-                    .arg("--buffer")
-                    .arg(buffer_key.to_string())
                     .arg("--keypair")
                     .arg(&upgrade_authority_keypair)
+                    .arg("program")
+                    .arg("deploy")
+                    .arg("--buffer")
+                    .arg(buffer_key.to_string())
                     .arg("--program-id")
                     .arg(workspace.program_key.to_string()),
             )?;
@@ -310,16 +287,11 @@ fn main_with_result() -> Result<()> {
             if workspace.has_anchor() {
                 output_header("Uploading new IDL");
                 command::exec(
-                    std::process::Command::new("anchor")
-                        .arg("idl")
+                    anchor_cmd!(workspace, "idl")
                         .arg("write-buffer")
                         .arg(workspace.program_key.to_string())
                         .arg("--filepath")
-                        .arg(&workspace.program_paths.idl)
-                        .arg("--provider.cluster")
-                        .arg(workspace.network.to_string())
-                        .arg("--provider.wallet")
-                        .arg(&workspace.deployer_path),
+                        .arg(&workspace.program_paths.idl),
                 )?;
 
                 println!(
