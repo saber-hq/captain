@@ -6,7 +6,7 @@ use crate::config::Config;
 use crate::config::Network;
 use anyhow::{anyhow, format_err, Result};
 use cargo_toml::Manifest;
-use clap::{crate_description, crate_version, AppSettings, Clap};
+use clap::{crate_authors, crate_description, crate_version, AppSettings, Clap};
 use colored::*;
 use rand::rngs::OsRng;
 use semver::Version;
@@ -19,7 +19,9 @@ use tempfile::NamedTempFile;
 
 #[derive(Debug, Clap)]
 pub enum SubCommand {
+    #[clap(about = "Initializes a new Fleet workspace.")]
     Init,
+    #[clap(about = "Deploys a program.")]
     Deploy {
         #[clap(short, long)]
         version: Option<Version>,
@@ -34,6 +36,7 @@ pub enum SubCommand {
         )]
         network: Network,
     },
+    #[clap(about = "Upgrades a program.")]
     Upgrade {
         #[clap(short, long)]
         version: Option<Version>,
@@ -51,9 +54,9 @@ pub enum SubCommand {
 }
 
 #[derive(Debug, Clap)]
-#[clap(author = "Saber Team <team@saber.so>")]
-#[clap(version = crate_version!())]
 #[clap(about = crate_description!())]
+#[clap(version = crate_version!())]
+#[clap(author = crate_authors!())]
 #[clap(setting = AppSettings::ColoredHelp)]
 pub struct Opts {
     #[clap(subcommand)]
