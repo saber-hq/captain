@@ -46,8 +46,6 @@ pub struct Config {
 pub struct Paths {
     /// Where binaries are stored
     pub artifacts: FleetPath,
-    /// Where deployment info is stored
-    pub deployments: FleetPath,
     /// Where program address keypairs are stored
     pub program_keypairs: FleetPath,
 }
