@@ -75,7 +75,7 @@ impl Config {
     pub fn network_config(&self, network: &Network) -> Result<&NetworkConfig> {
         self.networks
             .get(network)
-            .ok_or(format_err!("network {} not found", network))
+            .ok_or_else(|| format_err!("network {} not found", network))
     }
 
     /// Path to the keypair of a program.
@@ -133,7 +133,7 @@ impl Config {
             cwd_opt = cwd.parent();
         }
 
-        return Err(anyhow!("Cargo.toml and Fleet.toml not found"));
+        Err(anyhow!("Cargo.toml and Fleet.toml not found"))
     }
 }
 

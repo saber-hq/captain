@@ -9,6 +9,7 @@ use semver::Version;
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::Signer;
 use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
 
 /// Deploys a program.
@@ -62,7 +63,7 @@ pub fn init(program: &str, version: Option<Version>, network: Network) -> Result
         deployer_path,
         deploy_version,
         program_paths,
-        artifact_paths: artifact_paths.clone(),
+        artifact_paths,
         program_key,
     })
 }
@@ -70,7 +71,7 @@ pub fn init(program: &str, version: Option<Version>, network: Network) -> Result
 fn check_and_get_program_paths(
     config: &Config,
     program: &str,
-    root: &PathBuf,
+    root: &Path,
     deploy_version: &Version,
 ) -> Result<ProgramPaths> {
     let program_bin_path = root
@@ -81,7 +82,7 @@ fn check_and_get_program_paths(
         .join("target")
         .join("idl")
         .join(format!("{}.json", program));
-    let program_id_path = config.program_kp_path(&deploy_version, program);
+    let program_id_path = config.program_kp_path(deploy_version, program);
 
     if !program_bin_path.exists() {
         return Err(anyhow!(
@@ -109,7 +110,7 @@ fn check_and_get_program_paths(
     })
 }
 
-fn get_deploy_version(program: &str, root: &PathBuf, version: Option<Version>) -> Result<Version> {
+fn get_deploy_version(program: &str, root: &Path, version: Option<Version>) -> Result<Version> {
     match version {
         Some(v) => Ok(v),
         None => {
