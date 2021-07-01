@@ -164,9 +164,9 @@ checksum = "8d696c370c750c948ada61c69a0ee2cbbb9c50b1019ddb86d9317157a99c2cae"
 
 [[package]]
 name = "borsh"
-version = "0.8.2"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09a7111f797cc721407885a323fb071636aee57f750b1a4ddc27397eba168a74"
+checksum = "4fcabb02816fdadf90866dc9a7824491ccb63d69f55375a266dc03509ac68d36"
 dependencies = [
  "borsh-derive",
  "hashbrown",
@@ -174,9 +174,9 @@ dependencies = [
 
 [[package]]
 name = "borsh-derive"
-version = "0.8.2"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "307f3740906bac2c118a8122fe22681232b244f1369273e45f1156b45c43d2dd"
+checksum = "4bd16f0729b89f0a212b0e2e1d19cc6593df63f771161a11863967780e2d033d"
 dependencies = [
  "borsh-derive-internal",
  "borsh-schema-derive-internal",
@@ -187,9 +187,9 @@ dependencies = [
 
 [[package]]
 name = "borsh-derive-internal"
-version = "0.8.2"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2104c73179359431cc98e016998f2f23bc7a05bc53e79741bcba705f30047bc"
+checksum = "1e321a130a3ac4b88eb59a6d670bde11eec9721a397b77e0f2079060e2a1b785"
 dependencies = [
  "proc-macro2 1.0.27",
  "quote 1.0.9",
@@ -198,9 +198,9 @@ dependencies = [
 
 [[package]]
 name = "borsh-schema-derive-internal"
-version = "0.8.2"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae29eb8418fcd46f723f8691a2ac06857d31179d33d2f2d91eb13967de97c728"
+checksum = "15151a485164b319cc7a5160fe4316dc469a27993f71b73d7617dc9032ff0fd7"
 dependencies = [
  "proc-macro2 1.0.27",
  "quote 1.0.9",
@@ -1927,9 +1927,9 @@ dependencies = [
 
 [[package]]
 name = "solana-crate-features"
-version = "1.7.2"
+version = "1.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b7da00208f41eaf547ef66465d1eab02ddff0cb0ec7a1254c49c89469f53de2"
+checksum = "262e476c9578aa6fdea04a0e1084948da2e8a79fa4198230890f8c3296a56338"
 dependencies = [
  "backtrace",
  "bytes 0.4.12",
@@ -1952,9 +1952,9 @@ dependencies = [
 
 [[package]]
 name = "solana-frozen-abi"
-version = "1.7.2"
+version = "1.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8deae875976c64b1cecfc501575ff0185aa3953be29691e83ebab04f94490ac"
+checksum = "9b1e0d064e18bacd418a20b1d3c1a699bd6df1920fda7dbf1a0f84b764aaa0fb"
 dependencies = [
  "bs58",
  "bv",
@@ -1972,9 +1972,9 @@ dependencies = [
 
 [[package]]
 name = "solana-frozen-abi-macro"
-version = "1.7.2"
+version = "1.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4b59337556e8d6240dbc75c793af59accbcbbd93e77a45a346c20fc296b3845d"
+checksum = "adb85ca95ec91b6683e9a414cbdf74fc3d104eded6cb20439b2bb6eea22d3514"
 dependencies = [
  "proc-macro2 1.0.27",
  "quote 1.0.9",
@@ -1984,9 +1984,9 @@ dependencies = [
 
 [[package]]
 name = "solana-logger"
-version = "1.7.2"
+version = "1.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb0c0bd132b3efa7b6c561618da1d31ff0688c7f0281545d11199f56ee6ca7cb"
+checksum = "7afaad15211575f769c1f5389fca78a10fe9bc676c2fcc7b91b85be978eadca3"
 dependencies = [
  "env_logger",
  "lazy_static",
@@ -1995,9 +1995,9 @@ dependencies = [
 
 [[package]]
 name = "solana-program"
-version = "1.7.2"
+version = "1.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea60f6b6d29488e780ce5a9cd4f7ce0d83aebe58910ae2f10cee36f69e266f30"
+checksum = "7d494621bfad15d6745a2bde5a5fa112c921011c00fa07987637d34bd544f191"
 dependencies = [
  "bincode",
  "blake3",
@@ -2029,9 +2029,9 @@ dependencies = [
 
 [[package]]
 name = "solana-sdk"
-version = "1.7.2"
+version = "1.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb4c0b2ed521c111bda27da8ccffe48222bac45044d7ffe691221b0db624499a"
+checksum = "045476e010fc091d01ec7ba6854328894db20e37b70124f05bf851cdeb60113b"
 dependencies = [
  "assert_matches",
  "bincode",
@@ -2078,9 +2078,9 @@ dependencies = [
 
 [[package]]
 name = "solana-sdk-macro"
-version = "1.7.2"
+version = "1.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea740a2599496175f2d1bd47f54d799c7f2d8c00152a4eb9aed21047cdb30c23"
+checksum = "3a7afe714e9abb9a93215bf5710ee1e244046f2189574301b3e38afb4a14c8f6"
 dependencies = [
  "bs58",
  "proc-macro2 1.0.27",
