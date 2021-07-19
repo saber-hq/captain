@@ -29,6 +29,8 @@ pub enum SubCommand {
     Init,
     #[clap(about = "Builds all programs. (Uses Anchor)")]
     Build,
+    #[clap(about = "Request an airdrop.")]
+    Airdrop { amount: u64 },
     #[clap(about = "Lists all available programs.")]
     Programs,
     #[clap(about = "Deploys a program.")]
@@ -45,6 +47,9 @@ pub enum SubCommand {
             possible_values = Network::VARIANTS
         )]
         network: Network,
+        #[clap(short, long)]
+        #[clap(about = "Skip the Anchor IDL upload.")]
+        skip_anchor_idl: bool,
     },
     #[clap(about = "Upgrades a program.")]
     Upgrade {
@@ -60,6 +65,9 @@ pub enum SubCommand {
             possible_values = Network::VARIANTS
         )]
         network: Network,
+        #[clap(short, long)]
+        #[clap(about = "Skip the Anchor IDL upload.")]
+        skip_anchor_idl: bool,
     },
 }
 
@@ -138,6 +146,11 @@ fn main_with_result() -> Result<()> {
                 command::exec(Command::new("cargo").arg("build-bpf"))?;
             }
         }
+        SubCommand::Airdrop { amount: _amount } => {
+            // let workspace = &workspace::load(program.as_str(), version, network.clone())?;
+            // command::exec(solana_cmd!(workspace).arg("airdrop").arg(amount))?;
+            println!("Unimplemented")
+        }
         SubCommand::Programs => {
             let (config, _, root) = Config::discover()?;
             let paths = std::fs::read_dir(root.join("./target/deploy/")).unwrap();
@@ -185,6 +198,7 @@ fn main_with_result() -> Result<()> {
             version,
             program,
             ref network,
+            skip_anchor_idl,
         } => {
             let workspace = &workspace::load(program.as_str(), version, network.clone())?;
             println!(
@@ -224,24 +238,28 @@ fn main_with_result() -> Result<()> {
             workspace.show_program()?;
 
             if workspace.has_anchor() {
-                output_header("Initializing IDL");
-                command::exec(
-                    anchor_cmd!(workspace, "idl")
-                        .arg("init")
-                        .arg(&workspace.program_key.to_string())
-                        .arg("--filepath")
-                        .arg(&workspace.program_paths.idl),
-                )?;
+                if skip_anchor_idl {
+                    output_header("Skipping Anchor IDL upload.");
+                } else {
+                    output_header("Initializing IDL");
+                    command::exec(
+                        anchor_cmd!(workspace, "idl")
+                            .arg("init")
+                            .arg(&workspace.program_key.to_string())
+                            .arg("--filepath")
+                            .arg(&workspace.program_paths.idl),
+                    )?;
 
-                output_header("Setting IDL authority");
-                command::exec(
-                    anchor_cmd!(workspace, "idl")
-                        .arg("set-authority")
-                        .arg("--program-id")
-                        .arg(workspace.program_key.to_string())
-                        .arg("--new-authority")
-                        .arg(&workspace.network_config.upgrade_authority),
-                )?;
+                    output_header("Setting IDL authority");
+                    command::exec(
+                        anchor_cmd!(workspace, "idl")
+                            .arg("set-authority")
+                            .arg("--program-id")
+                            .arg(workspace.program_key.to_string())
+                            .arg("--new-authority")
+                            .arg(&workspace.network_config.upgrade_authority),
+                    )?;
+                }
             }
 
             output_header("Copying artifacts");
@@ -253,6 +271,7 @@ fn main_with_result() -> Result<()> {
             version,
             program,
             ref network,
+            skip_anchor_idl,
         } => {
             let upgrade_authority_keypair =
                 env::var("UPGRADE_AUTHORITY_KEYPAIR").map_err(|_| {
@@ -325,20 +344,24 @@ fn main_with_result() -> Result<()> {
             workspace.show_program()?;
 
             if workspace.has_anchor() {
-                output_header("Uploading new IDL");
-                command::exec(
-                    anchor_cmd!(workspace, "idl")
-                        .arg("write-buffer")
-                        .arg(workspace.program_key.to_string())
-                        .arg("--filepath")
-                        .arg(&workspace.program_paths.idl),
-                )?;
+                if skip_anchor_idl {
+                    output_header("Skipping Anchor IDL upload.");
+                } else {
+                    output_header("Uploading new IDL");
+                    command::exec(
+                        anchor_cmd!(workspace, "idl")
+                            .arg("write-buffer")
+                            .arg(workspace.program_key.to_string())
+                            .arg("--filepath")
+                            .arg(&workspace.program_paths.idl),
+                    )?;
 
-                println!(
-                    "WARNING: please manually run `anchor idl set-buffer {} --buffer <BUFFER>`",
-                    workspace.program_key.to_string()
-                );
-                println!("TODO: need to be able to hook into anchor for this");
+                    println!(
+                        "WARNING: please manually run `anchor idl set-buffer {} --buffer <BUFFER>`",
+                        workspace.program_key.to_string()
+                    );
+                    println!("TODO: need to be able to hook into anchor for this");
+                }
             }
 
             output_header("Copying artifacts");
