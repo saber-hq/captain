@@ -30,7 +30,7 @@ pub enum SubCommand {
     #[clap(about = "Builds all programs. (Uses Anchor)")]
     Build,
     #[clap(about = "Request an airdrop.")]
-    Airdrop { amount: Int },
+    Airdrop { amount: u64 },
     #[clap(about = "Lists all available programs.")]
     Programs,
     #[clap(about = "Deploys a program.")]
@@ -49,7 +49,6 @@ pub enum SubCommand {
         network: Network,
         #[clap(short, long)]
         #[clap(about = "Skip the Anchor IDL upload.")]
-        #[clap(default_value = false)]
         skip_anchor_idl: bool,
     },
     #[clap(about = "Upgrades a program.")]
@@ -68,7 +67,6 @@ pub enum SubCommand {
         network: Network,
         #[clap(short, long)]
         #[clap(about = "Skip the Anchor IDL upload.")]
-        #[clap(default_value = false)]
         skip_anchor_idl: bool,
     },
 }
@@ -148,9 +146,10 @@ fn main_with_result() -> Result<()> {
                 command::exec(Command::new("cargo").arg("build-bpf"))?;
             }
         }
-        SubCommand::Airdrop { amount } => {
-            let workspace = &workspace::load(program.as_str(), version, network.clone())?;
-            command::exec(solana_cmd!(workspace).arg("airdrop").arg(amount))?;
+        SubCommand::Airdrop { amount: _amount } => {
+            // let workspace = &workspace::load(program.as_str(), version, network.clone())?;
+            // command::exec(solana_cmd!(workspace).arg("airdrop").arg(amount))?;
+            println!("Unimplemented")
         }
         SubCommand::Programs => {
             let (config, _, root) = Config::discover()?;
