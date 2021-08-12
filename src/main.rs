@@ -33,10 +33,17 @@ pub enum SubCommand {
     Airdrop { amount: u64 },
     #[clap(about = "Lists all available programs.")]
     Programs,
+    #[clap(about = "Releases a program into the artifactory.")]
+    Release {
+        #[clap(short, long)]
+        #[clap(about = "Name of the program in target/deploy/<id>.so")]
+        program: String,
+    },
     #[clap(about = "Deploys a program.")]
     Deploy {
         #[clap(short, long)]
-        version: Option<Version>,
+        #[clap(about = "Version of the program to deploy. Must be in the artifactory.")]
+        version: Version,
         #[clap(short, long)]
         #[clap(about = "Name of the program in target/deploy/<id>.so")]
         program: String,
@@ -54,7 +61,7 @@ pub enum SubCommand {
     #[clap(about = "Upgrades a program.")]
     Upgrade {
         #[clap(short, long)]
-        version: Option<Version>,
+        version: Version,
         #[clap(short, long)]
         #[clap(about = "Name of the program in target/deploy/<id>.so")]
         program: String,
@@ -194,13 +201,29 @@ fn main_with_result() -> Result<()> {
                 println!();
             }
         }
+        SubCommand::Release { program } => {
+            let workspace = &workspace::load(program.as_str(), None, Network::Localnet)?;
+            if workspace.artifact_paths.exist() {
+                return Err(anyhow!("Program artifacts already exist for this version. Make sure to bump your Cargo.toml."));
+            }
+
+            println!(
+                "Releasing program {} with version {}",
+                program, workspace.deploy_version
+            );
+
+            output_header("Copying artifacts");
+            workspace.copy_artifacts()?;
+
+            println!("Release success!");
+        }
         SubCommand::Deploy {
             version,
             program,
             ref network,
             skip_anchor_idl,
         } => {
-            let workspace = &workspace::load(program.as_str(), version, network.clone())?;
+            let workspace = &workspace::load(program.as_str(), version.into(), network.clone())?;
             println!(
                 "Deploying program {} with version {}",
                 program, workspace.deploy_version
@@ -219,7 +242,7 @@ fn main_with_result() -> Result<()> {
                 solana_cmd!(workspace)
                     .arg("program")
                     .arg("deploy")
-                    .arg(&workspace.program_paths.bin)
+                    .arg(&workspace.artifact_paths.bin)
                     .arg("--program-id")
                     .arg(&workspace.program_paths.id),
             )?;
@@ -278,15 +301,11 @@ fn main_with_result() -> Result<()> {
                     format_err!("Must set UPGRADE_AUTHORITY_KEYPAIR environment variable.")
                 })?;
 
-            let workspace = workspace::load(program.as_str(), version, network.clone())?;
+            let workspace = workspace::load(program.as_str(), version.into(), network.clone())?;
             println!(
                 "Upgrading program {} with version {}",
                 program, workspace.deploy_version
             );
-
-            if workspace.artifact_paths.exist() {
-                return Err(anyhow!("Program artifacts already exist for this version. Make sure to bump your Cargo.toml."));
-            }
 
             if !workspace.show_program()? {
                 println!("Program does not exist. Use `captain deploy` if you want to deploy the program for the first time.");
@@ -307,7 +326,7 @@ fn main_with_result() -> Result<()> {
                 solana_cmd!(workspace)
                     .arg("program")
                     .arg("write-buffer")
-                    .arg(&workspace.program_paths.bin)
+                    .arg(&workspace.artifact_paths.bin)
                     .arg("--output")
                     .arg("json")
                     .arg("--buffer")
