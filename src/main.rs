@@ -285,9 +285,6 @@ fn main_with_result() -> Result<()> {
                 }
             }
 
-            output_header("Copying artifacts");
-            workspace.copy_artifacts()?;
-
             println!("Deployment success!");
         }
         SubCommand::Upgrade {
@@ -382,9 +379,6 @@ fn main_with_result() -> Result<()> {
                     println!("TODO: need to be able to hook into anchor for this");
                 }
             }
-
-            output_header("Copying artifacts");
-            workspace.copy_artifacts()?;
 
             println!("Deployment success!");
         }
