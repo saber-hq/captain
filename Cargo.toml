@@ -17,7 +17,7 @@ semver = "1.0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "1.9.4" }
 shellexpand = "2.1.0"
-solana-sdk = "1.7.10"
+solana-sdk = "1.8.0"
 strum = "0.21.0"
 strum_macros = "0.21"
 tempfile = "3.2.0"
