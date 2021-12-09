@@ -18,7 +18,7 @@ Version control and key management for [Solana](https://solana.com/) programs.
 Install via Cargo like so:
 
 ```
-cargo install --git https://github.com/saber-hq/captain --force
+cargo install --git https://github.com/saber-hq/captain --force --locked
 ```
 
 Then, in your directory containing your root `Cargo.toml`, run the following command:
