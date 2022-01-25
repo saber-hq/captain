@@ -1,3 +1,12 @@
+---
+
+## ⚠️ Deprecation Warning ️️⚠️
+
+This project is **deprecated** and no longer maintained, please use the [goki-cli](https://github.com/GokiProtocol/goki-cli/) instead.
+
+---
+
+
 # captain 🧑‍✈️
 
 [![Crates.io](https://img.shields.io/crates/v/captain?style=flat-square)](https://crates.io/crates/captain)
